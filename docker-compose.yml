@@ -1,12 +1,4 @@
-# main branch — суурь дэд бүтэц (PostgreSQL + Datadog).
-#
-# Дүрэм: main branch дээр frontend, backend, DB хоорондоо холбогдоогүй.
-# Backend болон frontend service-үүд нь тухайн variant branch дээр л энэ файлд нэмэгдэнэ
-# (жишээ нь `nestjs-raw` branch: backend-nestjs-raw + frontend + NEXT_PUBLIC_API_BASE).
-#
-# Ашиглах:
-#   docker compose up postgres              # DB л ачаална
-#   docker compose --profile datadog up      # Datadog агент нэмэх (DD_API_KEY шаардана)
+# fastapi-orm variant branch — 1 backend + frontend + postgres + datadog.
 
 services:
   postgres:
@@ -41,6 +33,41 @@ services:
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
     profiles: ["datadog"]
+
+  backend:
+    build: ./backends/fastapi/orm
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-research123}
+      POSTGRES_DB: ${POSTGRES_DB:-shop}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://postgres:research123@postgres:5432/shop}
+      JWT_SECRET: ${JWT_SECRET:-research-jwt-secret}
+      IMPLEMENTATION: ${IMPLEMENTATION:-alpha}
+      DD_AGENT_HOST: datadog
+      DD_DOGSTATSD_PORT: 8125
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5002:5002"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE:-http://backend:5002}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
 
 volumes:
   pgdata:
