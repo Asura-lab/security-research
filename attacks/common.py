@@ -44,10 +44,10 @@ def load_variants() -> list[Variant]:
       VARIANT_<NAME>_URL — жишээ VARIANT_NESTJS_RAW_URL=https://... (Render-т deploy хийсэн үед).
     """
     defaults = [
-        ("nestjs-raw",  "http://localhost:3001"),
-        ("nestjs-orm",  "http://localhost:3002"),
-        ("fiber-raw",   "http://localhost:4001"),
-        ("fiber-orm",   "http://localhost:4002"),
+        ("nestjs-raw", "http://localhost:3001"),
+        ("nestjs-orm", "http://localhost:3002"),
+        ("fiber-raw", "http://localhost:4001"),
+        ("fiber-orm", "http://localhost:4002"),
         ("fastapi-raw", "http://localhost:5001"),
         ("fastapi-orm", "http://localhost:5002"),
     ]
@@ -64,9 +64,21 @@ class Credentials:
     password: str
 
 
-CREDS_ATTACKER = Credentials(username="attacker", password="password123")
-CREDS_VICTIM = Credentials(username="victim", password="password123")
-CREDS_ADMIN = Credentials(username="admin", password="password123")
+# Anchor хэрэглэгчид (dummyjson snapshot-с id 1/2/3-т нийцүүлсэн).
+# Cleartext PW-уудыг seed.py `db/dummyjson_snapshot/credentials.json`-т үүсгэсэн;
+# энд .env-с уншина (docker-compose environment-т мөн заавал байлгана).
+CREDS_ATTACKER = Credentials(
+    username=os.getenv("SEED_ATTACKER_USERNAME", "emilys"),
+    password=os.environ["SEED_ATTACKER_PASSWORD"],
+)
+CREDS_VICTIM = Credentials(
+    username=os.getenv("SEED_VICTIM_USERNAME", "michaelw"),
+    password=os.environ["SEED_VICTIM_PASSWORD"],
+)
+CREDS_ADMIN = Credentials(
+    username=os.getenv("SEED_ADMIN_USERNAME", "sophiab"),
+    password=os.environ["SEED_ADMIN_PASSWORD"],
+)
 
 
 class VariantClient:
@@ -88,7 +100,8 @@ class VariantClient:
         if cached is not None:
             return cached
         response = self._client.post(
-            "/api/auth/login", json={"username": creds.username, "password": creds.password}
+            "/api/auth/login",
+            json={"username": creds.username, "password": creds.password},
         )
         response.raise_for_status()
         token = response.json()["access_token"]
@@ -105,11 +118,17 @@ class VariantClient:
         params: Any = None,
     ) -> httpx.Response:
         headers = {"Authorization": f"Bearer {token}"} if token else None
-        return self._client.request(method, path, json=json_body, params=params, headers=headers)
+        return self._client.request(
+            method, path, json=json_body, params=params, headers=headers
+        )
 
-    def targets_status(self, admin_token: str, label: str | None = None) -> list[dict[str, Any]]:
+    def targets_status(
+        self, admin_token: str, label: str | None = None
+    ) -> list[dict[str, Any]]:
         response = self.request(
-            "GET", "/api/admin/targets/status", token=admin_token,
+            "GET",
+            "/api/admin/targets/status",
+            token=admin_token,
             params={"label": label} if label else None,
         )
         response.raise_for_status()
@@ -129,14 +148,21 @@ class Statsd:
             except Exception:  # noqa: BLE001
                 self._client = None
 
-    def marker(self, phase: str, attack: str, variant: str, implementation: str) -> None:
+    def marker(
+        self, phase: str, attack: str, variant: str, implementation: str
+    ) -> None:
         if self._client is None:
             return
         try:
             self._client.event(
                 title=f"attack.{phase}",
                 text=f"{attack} @ {variant} ({implementation})",
-                tags=[f"attack:{attack}", f"variant:{variant}", f"implementation:{implementation}", f"phase:{phase}"],
+                tags=[
+                    f"attack:{attack}",
+                    f"variant:{variant}",
+                    f"implementation:{implementation}",
+                    f"phase:{phase}",
+                ],
             )
         except Exception:  # noqa: BLE001
             pass

@@ -65,3 +65,7 @@ monitoring/metrics_export.csv
 
 # PostgreSQL local data (Docker volume-с гадна)
 pgdata/
+
+# dummyjson snapshot credentials — 208 хэрэглэгчийн cleartext strong PW
+# (seed.py-ээр deterministic үүсгэнэ, нэг удаа гаргаж git-т commit хийхгүй)
+db/dummyjson_snapshot/credentials.json
