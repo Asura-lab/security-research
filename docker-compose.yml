@@ -1,0 +1,46 @@
+# main branch — суурь дэд бүтэц (PostgreSQL + Datadog).
+#
+# Дүрэм: main branch дээр frontend, backend, DB хоорондоо холбогдоогүй.
+# Backend болон frontend service-үүд нь тухайн variant branch дээр л энэ файлд нэмэгдэнэ
+# (жишээ нь `nestjs-raw` branch: backend-nestjs-raw + frontend + NEXT_PUBLIC_API_BASE).
+#
+# Ашиглах:
+#   docker compose up postgres              # DB л ачаална
+#   docker compose --profile datadog up      # Datadog агент нэмэх (DD_API_KEY шаардана)
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-research123}
+      POSTGRES_DB: ${POSTGRES_DB:-shop}
+    volumes:
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-shop}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  datadog:
+    image: gcr.io/datadoghq/agent:7
+    restart: unless-stopped
+    environment:
+      DD_API_KEY: ${DD_API_KEY:-}
+      DD_SITE: ${DD_SITE:-datadoghq.com}
+      DD_DOGSTATSD_NON_LOCAL_TRAFFIC: "true"
+      DD_DOGSTATSD_ORIGIN_DETECTION: "true"
+    ports:
+      - "8125:8125/udp"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+    profiles: ["datadog"]
+
+volumes:
+  pgdata:

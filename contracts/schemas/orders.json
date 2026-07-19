@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "orders.json",
+  "$defs": {
+    "OrderItem": {
+      "type": "object",
+      "required": ["product_id", "quantity", "unit_price"],
+      "properties": {
+        "product_id": { "type": "integer" },
+        "quantity":   { "type": "integer", "minimum": 1 },
+        "unit_price": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "Order": {
+      "type": "object",
+      "required": ["id", "user_id", "status", "total", "items"],
+      "properties": {
+        "id":      { "type": "integer" },
+        "user_id": { "type": "integer" },
+        "status":  { "type": "string" },
+        "total":   { "type": "number" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OrderItem" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "CreateOrderRequest": {
+      "type": "object",
+      "required": ["items"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["product_id", "quantity"],
+            "properties": {
+              "product_id": { "type": "integer" },
+              "quantity":   { "type": "integer", "minimum": 1 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "UpdateOrderRequest": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "OrderResponse": {
+      "type": "object",
+      "required": ["order"],
+      "properties": {
+        "order": { "$ref": "#/$defs/Order" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

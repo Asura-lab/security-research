@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "admin.json",
+  "$defs": {
+    "TargetsStatusResponse": {
+      "type": "object",
+      "required": ["targets"],
+      "properties": {
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label", "kind", "value", "nonce"],
+            "properties": {
+              "label":   { "type": "string" },
+              "kind":    { "enum": ["read", "write"] },
+              "value":   { "type": "string" },
+              "nonce":   { "type": "string" },
+              "deleted": { "type": "boolean" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

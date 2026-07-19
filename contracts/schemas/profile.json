@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "profile.json",
+  "$defs": {
+    "Profile": {
+      "type": "object",
+      "required": ["user_id", "username", "email", "role", "is_admin"],
+      "properties": {
+        "user_id":  { "type": "integer" },
+        "username": { "type": "string" },
+        "email":    { "type": "string" },
+        "role":     { "enum": ["customer", "admin"] },
+        "is_admin": { "type": "boolean" },
+        "address":  { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "UpdateProfileRequest": {
+      "type": "object",
+      "description": "Alpha impl нь мэдэгдээгүй талбарыг accept хийж болно — Overposting оролт.",
+      "properties": {
+        "name":    { "type": "string" },
+        "address": { "type": "string" },
+        "role":    { "type": "string" },
+        "is_admin": { "type": "boolean" },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label", "value"],
+            "properties": {
+              "label": { "type": "string" },
+              "value": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "ProfileResponse": {
+      "type": "object",
+      "required": ["profile"],
+      "properties": {
+        "profile": { "$ref": "#/$defs/Profile" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

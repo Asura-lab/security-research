@@ -1,0 +1,67 @@
+# Environment (secrets)
+.env
+.env.local
+.env.*.local
+
+# Node.js / TypeScript (NestJS, Next.js)
+node_modules/
+dist/
+build/
+.next/
+*.tsbuildinfo
+pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+.eslintcache
+
+# Python (FastAPI, attacks/)
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+
+# Go (Fiber)
+vendor/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Prisma
+backends/nestjs/orm/prisma/generated/
+
+# Rust / other build outputs
+target/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docker
+# (docker-compose.override.yml нь локал debug тохиргоо)
+docker-compose.override.yml
+
+# Туршилтын үр дүн (attacks/results/) - JSONL, summary.json
+attacks/results/
+attacks/pre_attack_report.md
+
+# Monitoring — dashboard.json template нь repo-д хадгалагдана (API key байхгүй)
+# monitoring/metrics_export.csv нь local output тул алгасна.
+monitoring/metrics_export.csv
+
+# PostgreSQL local data (Docker volume-с гадна)
+pgdata/

@@ -1,0 +1,11 @@
+* { box-sizing: border-box; }
+body { font-family: system-ui, sans-serif; margin: 0; padding: 0; }
+header { padding: 1rem; background: #111; color: #eee; }
+header a { color: #eee; margin-right: 0.5rem; }
+main { padding: 1.5rem; max-width: 900px; }
+label { display: block; margin-bottom: 0.5rem; }
+input, textarea { padding: 0.4rem; width: 100%; max-width: 400px; }
+button { padding: 0.5rem 1rem; margin-top: 0.5rem; cursor: pointer; }
+table { border-collapse: collapse; }
+th, td { padding: 0.3rem 0.6rem; border-bottom: 1px solid #ddd; }
+.error { color: #b00; }

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "error.json",
+  "title": "ErrorResponse",
+  "type": "object",
+  "required": ["error"],
+  "properties": {
+    "error": {
+      "type": "string",
+      "enum": ["validation_error", "invalid_token", "forbidden", "not_found", "internal", "conflict"]
+    },
+    "message": { "type": "string" }
+  },
+  "additionalProperties": false
+}
