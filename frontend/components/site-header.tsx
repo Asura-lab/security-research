@@ -12,7 +12,6 @@ const NAV = [
   { href: '/', label: 'Home' },
   { href: '/shop', label: 'Shop' },
   { href: '/categories', label: 'Categories' },
-  { href: '/products', label: 'Backend Demo' },
 ];
 
 export function SiteHeader() {
